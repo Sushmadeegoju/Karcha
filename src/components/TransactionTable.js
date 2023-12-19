@@ -18,9 +18,9 @@ const TransactionTable = ({ header, rows, onSetCategory }) => {
           <Table.Row key={index}>
             <Table.Cell>{transaction.ID}</Table.Cell>
             <Table.Cell>{transaction.Description}</Table.Cell>
-            <Table.Cell>{transaction.Category}</Table.Cell>
+            <Table.Cell>{transaction.CategoryName}</Table.Cell>
             <Table.Cell>{transaction.Amount}</Table.Cell>
-            <Table.Cell>{transaction.Date}</Table.Cell>
+            <Table.Cell>{transaction.Time}</Table.Cell>
             {/* <Table.Cell>
               <Button.Group>
                 <Button
