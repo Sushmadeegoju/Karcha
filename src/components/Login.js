@@ -6,11 +6,14 @@ import "../css/login.css"
 const Login = () => {
   const navigate = useNavigate();
   const { dispatch } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [loginEmail, setEmail] = useState('');
+  const [loginPassword, setPassword] = useState('');
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event) => {
     try {
+      event.preventDefault();
+        const loginEmail = document.getElementById('email-txt').value;
+        const loginPassword = document.getElementById('password').value;
       // Perform authentication logic (replace this with your actual authentication process)
       // For simplicity, let's assume the login is successful
       const response = await fetch('https://karchu.onrender.com/v1/user/auth', {
@@ -18,18 +21,19 @@ const Login = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ Email: email, Password: password }),
+        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
       });
       console.log("finished this!!");
 
       if (response.ok) {
         const user = await response.json();
+        console.log("User: ",user);
 
         // Dispatch the LOGIN action to update the global state
         dispatch({ type: 'LOGIN', payload: { userId: user._id } });
 
         // Redirect to the dashboard after login
-        navigate('/register');
+        navigate('/transactions');
       } else {
         // Handle authentication failure
         console.error('Authentication failed');
