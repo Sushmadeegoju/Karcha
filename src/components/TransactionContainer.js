@@ -23,12 +23,23 @@ const TransactionContainer = () => {
 
   const fetchData = async (url) => {
     try {
-      if (searchTerm) {
+      const data = {
+        email: 'ramanvanakalla123@gmail.com',
+        password: 'Raman@123',
+      };
+      const options = {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: data ? JSON.stringify(data) : null,
+      };
+      if (false) {
         url = `https://karchu.onrender.com/v1/transactions/get/${searchTerm}`;
       }
 
-      const response = await fetch(url);
-
+      const response = await fetch(url, options);
+      console.log(response)
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -142,7 +153,7 @@ const TransactionContainer = () => {
 
       <TransactionTable
         header={header}
-        rows={sampleData}
+        rows={transactions}
         onPageClick={handlePageClick}
         onSetLabel={handleSetLabel}
         numPages={parseInt(transactions.length / 15)}

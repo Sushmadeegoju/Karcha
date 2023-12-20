@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -9,10 +9,12 @@ import "../css/App.css"
 
 const Header = () => {
     const { state, dispatch } = useAuth();
+    const navigate = useNavigate();
 
     const handleLogout = () => {
       // Dispatch the LOGOUT action
       dispatch({ type: 'LOGOUT' });
+      navigate('/login');
       // ... other logout logic
     };
   const [anchorEl, setAnchorEl] = useState(null);
@@ -27,12 +29,7 @@ const Header = () => {
     switch (option) {
       case 'My Dashboard':
         // Add the logic to navigate to the dashboard
-        break;
-      case 'View Jobs':
-        // Add the logic to navigate to the jobs page
-        break;
-      case 'View Mentors':
-        // Add the logic to navigate to the mentors page
+        navigate('/transactions');
         break;
       case 'Logout':
         handleLogout();
@@ -42,7 +39,7 @@ const Header = () => {
     }
   };
 
-  const options = ['My Dashboard', 'View Jobs', 'View Mentors', 'Logout'];
+  const options = ['My Dashboard', 'Logout'];
 
   return (
     <header className='Home-header'>

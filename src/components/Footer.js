@@ -1,8 +1,8 @@
 export default function Footer() {
     return (
-        <footer>
+      <footer className="app-footer">
         <section>
-          <p> &copy; 2023 EasyHire, Inc</p>
+          <p> &copy; 2023 Karcha, Inc</p>
         </section>
         <section>
           <p> About Us | Directions | Contact Us</p>

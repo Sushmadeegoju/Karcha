@@ -73,11 +73,11 @@ body {
   background-size: cover;
 }
 
-Footer {
+.app-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background-color: #6F4E37; /* Background color for the header */
-  padding: 0px 20px;
+  padding: 10px 20px;
   color: white; /* Text color for the header */
 }
