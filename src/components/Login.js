@@ -6,8 +6,6 @@ import "../css/login.css"
 const Login = () => {
   const navigate = useNavigate();
   const { dispatch } = useAuth();
-  const [loginEmail, setEmail] = useState('');
-  const [loginPassword, setPassword] = useState('');
 
   const handleSubmit = async (event) => {
     try {
@@ -28,9 +26,10 @@ const Login = () => {
       if (response.ok) {
         const user = await response.json();
         console.log("User: ",user);
+        // console.log(user.name, user.password);
 
         // Dispatch the LOGIN action to update the global state
-        dispatch({ type: 'LOGIN', payload: { userId: user._id } });
+        dispatch({ type: 'LOGIN', payload: { userId: user._id, userName: loginEmail, userPassword: loginPassword } });
 
         // Redirect to the dashboard after login
         navigate('/transactions');

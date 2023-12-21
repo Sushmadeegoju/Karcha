@@ -1,13 +1,52 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Segment, Button, Input } from 'semantic-ui-react';
-import { Link } from 'react-router-dom';
+import { Container, Segment, Button, Input, Icon, Dropdown } from 'semantic-ui-react';
+import { Link, useNavigate } from 'react-router-dom';
 import TransactionTable from './TransactionTable';
+import { useAuth } from './AuthContext';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import IconButton from '@mui/material/IconButton';
 
 const TransactionContainer = () => {
+  const navigate = useNavigate();
   const [transactions, setTransactions] = useState([]);
   const [page, setPage] = useState(0);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const { state } = useAuth();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = (option) => {
+    setAnchorEl(null);
+    switch (option) {
+      case 'Add Transaction':
+        // Add the logic to navigate to the dashboard
+        handleAddTransaction();
+        break;
+      case 'Add Category':
+        handleAddCategory();
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleAddTransaction = () => {
+    // Add logic to navigate or handle the addition of a transaction
+    console.log('Add Transaction clicked');
+  };
+
+  const handleAddCategory = () => {
+    // Add logic to navigate or handle the addition of a category
+    console.log('Add Category clicked');
+  };
+
+  const options = [ 'Add Transaction', 'Add Category' ];
 
   const handleSearch = (e) => {
     if (e.key === 'Enter') {
@@ -24,9 +63,10 @@ const TransactionContainer = () => {
   const fetchData = async (url) => {
     try {
       const data = {
-        email: 'ramanvanakalla123@gmail.com',
-        password: 'Raman@123',
+        email: state.userName,
+        password: state.userPassword,
       };
+      console.log(state.userName, state.userPassword);
       const options = {
         method: "POST",
         headers: {
@@ -62,26 +102,6 @@ const TransactionContainer = () => {
     'SplitTag'
 ,    'Edit',
     'Delete'
-  ];
-
-  const sampleData = [
-    {
-      ID: 1,
-      Description: 'Lorem Ipsum',
-      Category: 'Expense',
-      Amount: 50.25,
-      Date: '2023-01-15',
-      SplitTag: 'Personal',
-    },
-    {
-      ID: 2,
-      Description: 'Dolor Sit Amet',
-      Category: 'Income',
-      Amount: 100.75,
-      Date: '2023-01-20',
-      SplitTag: 'Work',
-    },
-    // Add more sample data as needed
   ];
   
 
@@ -126,11 +146,37 @@ const TransactionContainer = () => {
             onKeyDown={handleSearch}
           />
         </div>
-        <Link to="/mentors">
-          <Button>
-            Add a Transaction
-          </Button>
-        </Link>
+        <IconButton
+            aria-label="more"
+            aria-controls={open ? 'long-menu' : undefined}
+            aria-expanded={open ? 'true' : undefined}
+            aria-haspopup="true"
+            onClick={handleClick}
+            style={{ backgroundColor: '#6F4E37', color: 'white', padding: '4px 2px 5px 5px', borderRadius: '50%', alignItems: 'center'}}
+          >
+            <Icon name="plus"/>
+          </IconButton>
+        <Menu
+            id="long-menu"
+            MenuListProps={{
+              'aria-labelledby': 'long-button',
+            }}
+            anchorEl={anchorEl}
+            open={open}
+            onClose={() => handleClose('')}
+            PaperProps={{
+              style: {
+                maxHeight: 192,
+                width: '20ch',
+              },
+            }}
+          >
+            {options.map((option) => (
+              <MenuItem key={option} selected={option === 'Pyxis'} onClick={() => handleClose(option)}>
+                {option}
+              </MenuItem>
+            ))}
+          </Menu>
       </Segment>
       <Container padding="20px 10px" style={{ overflow: 'auto', marginBottom: '20px'}}>
       <Button.Group style={{ marginLeft: '10px' }}>
@@ -147,7 +193,7 @@ const TransactionContainer = () => {
           onChange={(e, { value }) => setNumTransactions(value)}
         />
 
-    <Button.Group style={{ marginLeft: '10px', color: '#6F4E37'}}>
+      <Button.Group style={{ marginLeft: '10px', color: '#6F4E37'}}>
         <Button style={{ backgroundColor: '#6F4E37', color: 'white' }} onClick={handleAll}>Submit</Button>
       </Button.Group>
 
