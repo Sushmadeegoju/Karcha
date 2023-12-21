@@ -10,12 +10,16 @@ const authReducer = (state, action) => {
         ...state,
         isLoggedIn: true,
         userId: action.payload.userId,
+        userName: action.payload.userName,
+        userPassword: action.payload.userPassword
       };
     case 'LOGOUT':
       return {
         ...state,
         isLoggedIn: false,
         userId: null,
+        userName: null,
+        userPassword: null
       };
     default:
       return state;
@@ -26,6 +30,8 @@ export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, {
     isLoggedIn: false,
     userId: null,
+    userName: null,
+    userPassword: null
   });
 
   return (

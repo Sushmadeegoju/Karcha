@@ -45,7 +45,7 @@ const Header = () => {
     <header className='Home-header'>
       <div style={{ color: 'white', fontWeight: 'bold' }}>Karcha</div>
       {state.isLoggedIn ? (
-        <div style={{ backgroundColor: 'black' }}>
+        <div>
           <IconButton
             aria-label="more"
             aria-controls={open ? 'long-menu' : undefined}
