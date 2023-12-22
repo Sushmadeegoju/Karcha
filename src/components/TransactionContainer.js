@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Segment, Button, Input, Icon } from 'semantic-ui-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Select as MuiSelect } from '@mui/material';
 import TransactionTable from './TransactionTable';
 import { useAuth } from './AuthContext';
 import Menu from '@mui/material/Menu';
@@ -14,6 +15,12 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 const TransactionContainer = () => {
+
+  useEffect(() => {
+    // Fetch categories when the component mounts
+    getCategoriesFromDB();
+  }, []);
+
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState([]);
   const [page, setPage] = useState(0);
@@ -42,10 +49,67 @@ const TransactionContainer = () => {
     }
   };
 
+  const handleCategoryChange = (event) => {
+    handleInputChange('category', event.target.value);
+  };
+
+  const [openTransactionDialog, setOpenTransactionDialog] = useState(false);
+  const [formData, setFormData] = useState({
+    amount: 0,
+    category: '',
+    description: '',
+    email: state.userName || '',
+    password: state.userPassword || '',
+    splitTag: '',
+  });
+
+  const handleInputChange = (field, value) => {
+    setFormData({
+      ...formData,
+      [field]: value,
+    });
+  };
+
+  const handleCloseTransactionDialog = () => {
+    setOpenTransactionDialog(false);
+  }
+
   const handleAddTransaction = () => {
     // Add logic to navigate or handle the addition of a transaction
     console.log('Add Transaction clicked');
+    setOpenTransactionDialog(true);
   };
+
+  const addTransactionToDB = async () => {
+    setOpenTransactionDialog(false);
+    const dataToSend = {
+      "amount": parseInt(formData.amount, 10),
+      "category": formData.category,
+      "description": formData.description,
+      "email": formData.email,
+      "password": formData.password,
+      "splitTag": formData.splitTag
+    }
+    console.log("Data sent: ", dataToSend);
+    try {
+      const response = await fetch('https://karchu.onrender.com/v1/transactions', {
+        method: 'POST',
+        headers: {
+          "Content-Type" : 'application/json'
+        },
+        body: JSON.stringify(dataToSend),
+      });
+
+      if(response.ok) {
+        alert(`Transaction is successfully added!`);
+        // console.log(response.json());
+      }
+
+    } catch(error) {
+      alert("Something went wrong in adding transaction! Try Again!");
+      console.log("Transaction not added to the DB!", error);
+    }
+  }
 
   const [openDialog, setOpenDialog] = useState(false);
   const [categoryName, setCategoryName] = useState('');
@@ -66,10 +130,37 @@ const TransactionContainer = () => {
         alert(`${categoryName} is successfully added to the category list!`);
         // console.log(response.json());
       }
-
+      else {
+        alert("Category not added! Try Again!!!");
+      }
     } catch(error) {
       alert("Something went wrong in adding category to the DB!!!");
       console.log("Category not added to the DB!", error);
+    }
+  }
+
+  const [categories, setCategories] = useState([]); // Add your categories here
+
+  const getCategoriesFromDB = async () => {
+    try {
+      const response = await fetch('https://karchu.onrender.com/v1/categories/all', {
+        method: 'POST',
+        headers: {
+          "Content-Type" : 'application/json'
+        },
+        body: JSON.stringify({ email : state.userName, password : state.userPassword }),
+      });
+
+      if(response.ok) {
+        const data = await response.json();
+        setCategories(data);
+        console.log("categories: ", categories);
+      }
+      else {
+        console.log("Categories not fetched!!!");
+      }
+    } catch(error) {
+      console.log("Something went wrong in fetching categories!!!", error);
     }
   }
 
@@ -136,13 +227,13 @@ const TransactionContainer = () => {
   };
 
   const header = [
-    'ID',
-    'Description',
+    'Date',
+    'Time',
     'Category',
     'Amount',
-    'Date',
-    'SplitTag'
-,    'Edit',
+    'Description',
+    'SplitTag',
+    'Edit',
     'Delete'
   ];
   
@@ -269,6 +360,51 @@ const TransactionContainer = () => {
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
           <Button onClick={handleAddCategorytoDB}>Add</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Transaction dialog */}
+      <Dialog open={openTransactionDialog} onClose={handleCloseTransactionDialog}>
+        <DialogTitle>Add Transaction</DialogTitle>
+        <DialogContent style={{ display: "flex", flexDirection: "column"}}>
+          <DialogContentText style={{ marginBottom: "10px" }}>
+            Fill in the details below to add a new transaction.
+          </DialogContentText>
+          <TextField
+            label="Amount"
+            type="number"
+            value={formData.amount}
+            onChange={(e) => handleInputChange('amount', e.target.value)}
+            style={{ marginBottom: "10px" }}
+          />
+          <TextField
+            label="Description"
+            value={formData.description}
+            onChange={(e) => handleInputChange('description', e.target.value)}
+            style={{ marginBottom: "10px" }}
+          />
+          <MuiSelect
+            label="Category"
+            value={formData.category}
+            onChange={handleCategoryChange}
+            style={{ marginBottom: "10px" }}
+          >
+            {categories.map((category) => (
+              <MenuItem key={category} value={category}>
+                {category}
+              </MenuItem>
+            ))}
+          </MuiSelect>
+          <TextField
+            label="Split Tag"
+            value={formData.splitTag}
+            onChange={(e) => handleInputChange('splitTag', e.target.value)}
+            style={{ marginBottom: "10px" }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>Cancel</Button>
+          <Button onClick={addTransactionToDB}>Add</Button>
         </DialogActions>
       </Dialog>
     </div>
