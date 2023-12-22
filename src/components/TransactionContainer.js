@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Segment, Button, Input, Icon, Dropdown } from 'semantic-ui-react';
+import { Container, Segment, Button, Input, Icon } from 'semantic-ui-react';
 import { Link, useNavigate } from 'react-router-dom';
 import TransactionTable from './TransactionTable';
 import { useAuth } from './AuthContext';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 const TransactionContainer = () => {
   const navigate = useNavigate();
@@ -41,9 +47,45 @@ const TransactionContainer = () => {
     console.log('Add Transaction clicked');
   };
 
+  const [openDialog, setOpenDialog] = useState(false);
+  const [categoryName, setCategoryName] = useState('');
+
+  const handleAddCategorytoDB = async () => {
+    setOpenDialog(false);
+    try {
+      const response = await fetch('https://karchu.onrender.com/v1/categories', {
+        method: 'POST',
+        headers: {
+          "Content-Type" : 'application/json'
+        },
+        body: JSON.stringify({ email : state.userName, password : state.userPassword, categoryName : categoryName }),
+      });
+      console.log(state.userName, state.userPassword, categoryName);
+
+      if(response.ok) {
+        alert(`${categoryName} is successfully added to the category list!`);
+        // console.log(response.json());
+      }
+
+    } catch(error) {
+      alert("Something went wrong in adding category to the DB!!!");
+      console.log("Category not added to the DB!", error);
+    }
+  }
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  }
+
+  const handleCategoryNameChange = (event) => {
+    // Update the category name as the user types
+    setCategoryName(event.target.value);
+  };
+
   const handleAddCategory = () => {
     // Add logic to navigate or handle the addition of a category
     console.log('Add Category clicked');
+    setOpenDialog(true);
   };
 
   const options = [ 'Add Transaction', 'Add Category' ];
@@ -206,6 +248,29 @@ const TransactionContainer = () => {
         page={page}
       />
     </Container>
+    <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogTitle>Add a Category</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Enter a category name below to add a new category to your category list!
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="categoryName"
+            label="Category Name"
+            type="text"
+            fullWidth
+            variant="standard"
+            value={categoryName}
+            onChange={handleCategoryNameChange}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>Cancel</Button>
+          <Button onClick={handleAddCategorytoDB}>Add</Button>
+        </DialogActions>
+      </Dialog>
     </div>
     
   );
