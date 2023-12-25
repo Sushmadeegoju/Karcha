@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Segment, Button, Input, Icon } from 'semantic-ui-react';
+import InputLabel from '@mui/material/InputLabel';
 import { Link, useNavigate } from 'react-router-dom';
 import { Select as MuiSelect } from '@mui/material';
+import FormControl from '@mui/material/FormControl';
 import TransactionTable from './TransactionTable';
 import { useAuth } from './AuthContext';
 import Menu from '@mui/material/Menu';
@@ -19,6 +21,7 @@ const TransactionContainer = () => {
   useEffect(() => {
     // Fetch categories when the component mounts
     getCategoriesFromDB();
+    getSplitTagsFromDB();
   }, []);
 
   const navigate = useNavigate();
@@ -53,6 +56,10 @@ const TransactionContainer = () => {
     handleInputChange('category', event.target.value);
   };
 
+  const handleSplitTagChange = (event) => {
+    handleInputChange('splitTag', event.target.value);
+  };
+
   const [openTransactionDialog, setOpenTransactionDialog] = useState(false);
   const [formData, setFormData] = useState({
     amount: 0,
@@ -71,6 +78,7 @@ const TransactionContainer = () => {
   };
 
   const handleCloseTransactionDialog = () => {
+    console.log("Close transaction clicked!!");
     setOpenTransactionDialog(false);
   }
 
@@ -161,6 +169,30 @@ const TransactionContainer = () => {
       }
     } catch(error) {
       console.log("Something went wrong in fetching categories!!!", error);
+    }
+  }
+
+  const [splitTags, setSplitTags] = useState([]);
+
+  const getSplitTagsFromDB = async () => {
+    try {
+      const response = await fetch('https://karchu.onrender.com/v1/split-tags', {
+        method: 'GET',
+        headers: {
+          "Content-Type" : 'application/json'
+        },
+      });
+
+      if(response.ok) {
+        const data = await response.json();
+        setSplitTags(data);
+        console.log("splitTags: ", splitTags);
+      }
+      else {
+        console.log("SplitTags not fetched!!!");
+      }
+    } catch(error) {
+      console.log("Something went wrong in fetching splitTags!!!", error);
     }
   }
 
@@ -339,6 +371,7 @@ const TransactionContainer = () => {
         page={page}
       />
     </Container>
+    {/* Category dialog */}
     <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>Add a Category</DialogTitle>
         <DialogContent>
@@ -375,35 +408,51 @@ const TransactionContainer = () => {
             type="number"
             value={formData.amount}
             onChange={(e) => handleInputChange('amount', e.target.value)}
-            style={{ marginBottom: "10px" }}
+            style={{ marginBottom: "15px" }}
           />
           <TextField
             label="Description"
             value={formData.description}
             onChange={(e) => handleInputChange('description', e.target.value)}
-            style={{ marginBottom: "10px" }}
+            style={{ marginBottom: "15px" }}
           />
-          <MuiSelect
-            label="Category"
-            value={formData.category}
-            onChange={handleCategoryChange}
-            style={{ marginBottom: "10px" }}
-          >
-            {categories.map((category) => (
-              <MenuItem key={category} value={category}>
-                {category}
-              </MenuItem>
-            ))}
-          </MuiSelect>
-          <TextField
-            label="Split Tag"
-            value={formData.splitTag}
-            onChange={(e) => handleInputChange('splitTag', e.target.value)}
-            style={{ marginBottom: "10px" }}
-          />
+          <FormControl sx={{ width: 350 }} size="small">
+            <InputLabel id="demo-select-category">Category</InputLabel>
+            <MuiSelect
+              labelId="demo-select-category"
+              id="demo-select-small"
+              label="Category"
+              value={formData.category}
+              onChange={handleCategoryChange}
+              style={{ marginBottom: "15px" }}
+            >
+              {categories.map((category) => (
+                <MenuItem key={category} value={category}>
+                  {category}
+                </MenuItem>
+              ))}
+            </MuiSelect>
+          </FormControl>
+          
+          <FormControl  sx={{ width: 350 }} size="small">
+            <InputLabel id="demo-select-splitTag">Split Tag</InputLabel>
+            <MuiSelect
+              labelId="demo-select-splitTag"
+              id="demo-select-small"
+              label="SplitTag"
+              value={formData.splitTag}
+              onChange={handleSplitTagChange}
+            >
+              {splitTags.map((splitTag) => (
+                <MenuItem key={splitTag} value={splitTag}>
+                  {splitTag}
+                </MenuItem>
+              ))}
+            </MuiSelect>
+          </FormControl>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
+          <Button onClick={handleCloseTransactionDialog}>Cancel</Button>
           <Button onClick={addTransactionToDB}>Add</Button>
         </DialogActions>
       </Dialog>
