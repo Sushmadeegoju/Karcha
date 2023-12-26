@@ -265,8 +265,7 @@ const TransactionContainer = () => {
     'Amount',
     'Description',
     'SplitTag',
-    'Edit',
-    'Delete'
+    'Actions'
   ];
   
 
