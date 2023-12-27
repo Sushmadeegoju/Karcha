@@ -18,12 +18,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 const TransactionContainer = () => {
 
-  useEffect(() => {
-    // Fetch categories when the component mounts
-    getCategoriesFromDB();
-    getSplitTagsFromDB();
-  }, []);
-
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState([]);
   const [page, setPage] = useState(0);
@@ -77,14 +71,17 @@ const TransactionContainer = () => {
     });
   };
 
-  const handleCloseTransactionDialog = () => {
+  const handleCloseTransactionDialog = async () => {
     console.log("Close transaction clicked!!");
     setOpenTransactionDialog(false);
+    fetchData('https://karchu.onrender.com/v1/transactions/get');
   }
 
-  const handleAddTransaction = () => {
+  const handleAddTransaction = async () => {
     // Add logic to navigate or handle the addition of a transaction
     console.log('Add Transaction clicked');
+    await getCategoriesFromDB();
+    await getSplitTagsFromDB();
     setOpenTransactionDialog(true);
   };
 
@@ -198,6 +195,7 @@ const TransactionContainer = () => {
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
+    fetchData('https://karchu.onrender.com/v1/transactions/get');
   }
 
   const handleCategoryNameChange = (event) => {
@@ -239,9 +237,9 @@ const TransactionContainer = () => {
         },
         body: data ? JSON.stringify(data) : null,
       };
-      if (false) {
-        url = `https://karchu.onrender.com/v1/transactions/get/${searchTerm}`;
-      }
+      // if (false) {
+      //   url = `https://karchu.onrender.com/v1/transactions/get/${searchTerm}`;
+      // }
 
       const response = await fetch(url, options);
       console.log(response)
