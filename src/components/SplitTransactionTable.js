@@ -95,6 +95,7 @@ class SplitTransactionTable extends PureComponent
                             MenuListProps={{'aria-labelledby': 'long-button',}}
                             open={Boolean(this.state.anchorEl[index])}
                             anchorEl={this.state.anchorEl[index]}
+                            onClose={() => this.menuOptionClick('',transaction.SplitTransactionId, index)}
                             PaperProps={{
                                 style: {
                                 maxHeight: 192,
