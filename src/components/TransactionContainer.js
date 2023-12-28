@@ -298,6 +298,11 @@ const TransactionContainer = () => {
             View Transactions
           </Button>
         </Link>
+        <Link to="/splits">
+          <Button>
+            View Splits
+          </Button>
+        </Link>
         <div className="searchBarContainer">
           <input
             className="searchBarInput"
