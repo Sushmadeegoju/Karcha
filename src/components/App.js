@@ -5,6 +5,7 @@ import Footer from './Footer';
 import Login from './Login';
 import Register from './Register';
 import Transactions from './TransactionContainer';
+import SplitTransactionContainer from './SplitTransactionContainer';
 import 'semantic-ui-css/semantic.min.css';
 
 
@@ -17,6 +18,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/transactions" element={<Transactions />} />
+        <Route path='/splits' element={<SplitTransactionContainer />} />
       </Routes>
       <Footer />
     </div>
